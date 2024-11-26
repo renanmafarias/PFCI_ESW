@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+    <style>
+      .field {
+        width: 100%;
+      }
+      .form-section {
+        margin-bottom: 30px;
+      }
+    </style>
+    <script>
+      function loadConfiguration(configuration) {
+        try {
+          const configurationFormFields = document.forms['configurationForm'].elements;
+          const validationFieldOptions = configurationFormFields['validationField'].querySelectorAll('option');
+          for (const option of validationFieldOptions) {
+            if (option.value === configuration['validationField']) {
+              option.selected = true;
+            }
+          }
+          configurationFormFields['messageToUser'].value = configuration['messageToUser'];
+          configurationFormFields['validationMethod'].value = configuration['validationMethod'];
+        }
+        catch(exception) {}
+      }
+
+      function loadFormFields(formFields) {
+        try {
+          const select = document.forms['configurationForm'].elements['validationField'];
+          let option = null;
+          for (const field of formFields) {
+            option = document.createElement('option');
+            option.textContent = field;
+            option.value = field;
+            select.appendChild(option);
+          }
+        }
+        catch(exception) {}
+      }
+
+      function submitFormConfiguration(form) {
+        google.script.run.saveConfiguration(form);
+      }
+
+      function setup() {
+        try {
+          const form = document.forms['configurationForm'];
+          form.addEventListener('submit', (event) => {
+            event.preventDefault();
+          });
+          google.script.run.withSuccessHandler(loadFormFields).getFormFields();
+          google.script.run.withSuccessHandler(loadConfiguration).getConfiguration();
+        }
+        catch(exception) {}
+      }
+
+      window.addEventListener('load', setup);
+    </script>
+  </head>
+  <body>
+    <div>
+      <form name="configurationForm" onsubmit=submitFormConfiguration(this)>
+        <div class="block form-group form-section">
+          <label for="validation-field">Selecione o campo desejado para a validação:</label>
+          <select class="field" id="validation-field" name="validationField" required></select>
+        </div>
+        <div class="block form-group form-section">
+          <label for="message-to-user">Mensagem para ser exibida ao usuário:</label>
+          <textarea class="field" id="message-to-user" name="messageToUser" required rows=5></textarea>
+        </div>
+        <div class="form-section">
+          <p>Deseja validar as respostas de forma case-sensitive?</p>
+          <input id="validation-method" name="validationMethod" type="radio" value="case-sensitive">
+          <label for="validation-method">Sim</label>
+          <input id="not-validation-method" name="validationMethod" type="radio" value="case-insensitive">
+          <label for="not-validation-method">Não</label>
+        </div>
+        <button class="action" type="submit">Confirmar configurações</button>
+      </form>
+      <output id="output"></output>
+    </div>
+  </body>
+</html>

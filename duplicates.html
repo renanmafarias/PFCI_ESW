@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <script>
+      function fetchDuplicates() {
+        google.script.run.withSuccessHandler((duplicates) => {document.getElementById('output').textContent = duplicates}).loadDuplicates();
+      }
+      window.addEventListener('load', fetchDuplicates)
+    </script>
+  </head>
+  <body>
+    <output id="output"></output>
+  </body>
+</html>
